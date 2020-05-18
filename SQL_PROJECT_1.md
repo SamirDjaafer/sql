@@ -153,11 +153,20 @@ HAVING (SUM(od.UnitPrice * od.Quantity * (1 - od.Discount))) > 10000
 - Question 3.3
 
 ```SQL
-
+SELECT TOP 10 c.CustomerID, FORMAT(SUM((od.UnitPrice * od.Quantity) * (1 - od.Discount)), 'c') AS "Total Sales" FROM Orders o
+INNER JOIN [order details] od ON od.orderID = o.orderID
+INNER JOIN Customers c ON c.customerID = o.CustomerID
+WHERE YEAR(o.OrderDate) = (SELECT MAX(YEAR(OrderDate)) FROM Orders) AND o.ShippedDate is not null
+GROUP BY c.customerID
 ```
 
 - Question 3.4
 
 ```SQL
-
+SELECT FORMAT(o.ShippedDate, 'MMM-yy') AS "Shipping Month",
+AVG(DATEDIFF(dd, o.OrderDate, o.ShippedDate)) AS "Average Ship Time"
+FROM Orders o
+WHERE o.ShippedDate IS NOT NULL
+GROUP BY YEAR(o.ShippedDate), MONTH(o.ShippedDate),FORMAT(o.ShippedDate, 'MMM-yy')
+ORDER BY YEAR(o.ShippedDate), MONTH(o.ShippedDate)
 ```
